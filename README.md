@@ -40,7 +40,8 @@ For detailed setup instructions, see [SETUP.md](SETUP.md).
 ### Prerequisites
 - Python 3.8+
 - Node.js 16+ and npm
-- OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
+- Google API key for Gemini ([Get one here](https://makersuite.google.com/app/apikey))
+- ElevenLabs API key for audio transcription ([Get one here](https://elevenlabs.io/app/settings/api-keys))
 
 ### Backend Setup
 
@@ -56,10 +57,11 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-3. Create `.env` file and add your OpenAI API key:
+3. Create `.env` file and add your API keys:
 ```
-OPENAI_API_KEY=your_api_key_here
-OPENAI_MODEL=gpt-4-turbo-preview
+GOOGLE_API_KEY=your_google_api_key_here
+GOOGLE_MODEL=gemini-pro
+ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
 ```
 
 4. Run the server:
@@ -89,6 +91,26 @@ npm start
 Frontend available at `http://localhost:3000`
 
 ## API Endpoints
+
+### POST `/api/transcribe-audio`
+
+Transcribes an audio file to text using ElevenLabs.
+
+**Request:** Multipart form data
+- `file`: Audio file (MP3, WAV, M4A, FLAC, WEBM)
+- `model_id`: (optional) Model to use (default: "scribe_v1")
+- `language_code`: (optional) Language code (default: "eng")
+- `diarize`: (optional) Whether to annotate speakers (default: true)
+- `tag_audio_events`: (optional) Tag events like laughter (default: true)
+
+**Response:**
+```json
+{
+  "transcript": "Transcribed text here...",
+  "model_used": "scribe_v1",
+  "language": "eng"
+}
+```
 
 ### POST `/api/analyze-pitch`
 
@@ -120,17 +142,19 @@ Returns structured feedback following the exact format specified in the requirem
 
 ## Usage
 
-1. Enter or paste your pitch transcript
-2. Optionally provide context (audience, goal, duration, etc.)
-3. Submit for analysis
-4. Review the comprehensive feedback
-5. Use the improved pitch and practice exercises for your next attempt
+1. **Option A**: Upload an audio file to automatically transcribe it
+2. **Option B**: Enter or paste your pitch transcript directly
+3. Optionally provide context (audience, goal, duration, etc.)
+4. Submit for analysis
+5. Review the comprehensive feedback
+6. Use the improved pitch and practice exercises for your next attempt
 
 ## Technology Stack
 
-- **Backend**: FastAPI, Python, OpenAI API
+- **Backend**: FastAPI, Python, Google Gemini API, ElevenLabs API
 - **Frontend**: React, TypeScript
-- **AI**: OpenAI GPT models for pitch analysis
+- **AI**: Google Gemini models for pitch analysis
+- **Audio Transcription**: ElevenLabs for speech-to-text conversion
 
 ## License
 

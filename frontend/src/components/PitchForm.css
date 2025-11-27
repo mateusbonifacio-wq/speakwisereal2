@@ -133,6 +133,47 @@
   cursor: not-allowed;
 }
 
+.audio-upload-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.audio-upload-button {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: #667eea;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+  text-align: center;
+}
+
+.audio-upload-button:hover:not(:disabled) {
+  background: #5568d3;
+}
+
+.audio-upload-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.audio-file-name {
+  color: #666;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.transcribing-hint {
+  margin-top: 0.5rem;
+  color: #667eea;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
 @media (max-width: 768px) {
   .pitch-form {
     padding: 1.5rem;

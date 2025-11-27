@@ -10,6 +10,8 @@ interface PitchFormProps {
 const PitchForm: React.FC<PitchFormProps> = ({ onSubmit, loading }) => {
   const [pitchTranscript, setPitchTranscript] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
+  const [audioFile, setAudioFile] = useState<File | null>(null);
   
   // Context fields
   const [audience, setAudience] = useState('');
@@ -25,11 +27,55 @@ const PitchForm: React.FC<PitchFormProps> = ({ onSubmit, loading }) => {
   const [practiceAttempt, setPracticeAttempt] = useState(1);
   const [wantsDeploySuggestions, setWantsDeploySuggestions] = useState(false);
 
+  const handleAudioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/m4a', 'audio/flac', 'audio/webm'];
+    if (!validTypes.includes(file.type) && !file.name.match(/\.(mp3|wav|m4a|flac|webm)$/i)) {
+      alert('Please upload a valid audio file (MP3, WAV, M4A, FLAC, or WEBM)');
+      return;
+    }
+
+    setAudioFile(file);
+    setTranscribing(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('model_id', 'scribe_v1');
+      formData.append('language_code', 'eng');
+      formData.append('diarize', 'true');
+      formData.append('tag_audio_events', 'true');
+
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${API_BASE_URL}/api/transcribe-audio`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Transcription failed: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setPitchTranscript(data.transcript);
+      setAudioFile(null);
+    } catch (error) {
+      alert(`Error transcribing audio: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setTranscribing(false);
+      // Reset file input
+      e.target.value = '';
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!pitchTranscript.trim()) {
-      alert('Please enter your pitch transcript');
+      alert('Please enter your pitch transcript or upload an audio file');
       return;
     }
 

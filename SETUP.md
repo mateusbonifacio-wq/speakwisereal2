@@ -5,7 +5,8 @@
 ### Prerequisites
 - Python 3.8+ 
 - Node.js 16+ and npm
-- OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
+- Google API key for Gemini ([Get one here](https://makersuite.google.com/app/apikey))
+- ElevenLabs API key for audio transcription ([Get one here](https://elevenlabs.io/app/settings/api-keys))
 
 ### Backend Setup
 
@@ -39,10 +40,11 @@ type nul > .env
 touch .env
 ```
 
-5. Add your OpenAI API key to `.env`:
+5. Add your API keys to `.env`:
 ```
-OPENAI_API_KEY=your_openai_api_key_here
-OPENAI_MODEL=gpt-4-turbo-preview
+GOOGLE_API_KEY=your_google_api_key_here
+GOOGLE_MODEL=gemini-pro
+ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
 ```
 
 6. Run the backend server:
@@ -89,7 +91,8 @@ The frontend will be available at `http://localhost:3000`
 
 ### Backend Issues
 
-- **"OPENAI_API_KEY environment variable is not set"**: Make sure you created the `.env` file in the `backend` directory and added your API key
+- **"GOOGLE_API_KEY environment variable is not set"**: Make sure you created the `.env` file in the `backend` directory and added your Google API key
+- **"ELEVENLABS_API_KEY environment variable is not set"**: Make sure you added your ElevenLabs API key to the `.env` file (required for audio transcription)
 - **Import errors**: Make sure you activated your virtual environment and installed all requirements
 - **Port already in use**: Change the port in `uvicorn app.main:app --reload --port 8001`
 

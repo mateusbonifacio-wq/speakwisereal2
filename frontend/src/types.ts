@@ -53,3 +53,9 @@ export interface PitchFormData {
   session_info?: SessionInfo;
 }
 
+export interface TranscriptionResponse {
+  transcript: string;
+  model_used: string;
+  language: string;
+}
+
