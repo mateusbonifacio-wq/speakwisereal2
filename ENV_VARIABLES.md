@@ -6,10 +6,10 @@
 
 | Variável | Obrigatória | Descrição | Exemplo |
 |----------|-------------|-----------|---------|
-| `GOOGLE_API_KEY` | ✅ Sim | Chave da API do Google Gemini | `AIzaSyCdXunfTvMR6KuaeYNrcn7qEkb1BpydE6c` |
+| `GOOGLE_API_KEY` | ✅ Sim | Chave da API do Google Gemini | ` |
 | `GOOGLE_MODEL` | ❌ Não | Modelo do Gemini a usar (padrão: `gemini-pro`) | `gemini-pro` |
-| `ELEVENLABS_API_KEY` | ✅ Sim | Chave da API do ElevenLabs para transcrição | `sk_7e226b20506d08ef688d4d0def661073228f89148fc93dca` |
-| `ALLOWED_ORIGINS` | ❌ Não | URLs permitidas para CORS (separadas por vírgula) | `https://seu-app.vercel.app,https://outro-dominio.com` |
+| `ELEVENLABS_API_KEY` | ✅ Sim | Chave da API do ElevenLabs para transcrição |  |
+| `ALLOWED_ORIGINS` | ❌ Não | URLs permitidas para CORS (separadas por vírgula) |  |
 
 ### Para o Frontend
 
