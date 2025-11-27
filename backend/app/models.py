@@ -2,6 +2,12 @@ from pydantic import BaseModel, Field
 from typing import Optional
 
 
+class TranscriptionResponse(BaseModel):
+    transcript: str = Field(..., description="Transcribed text from audio")
+    model_used: str = Field(..., description="Model used for transcription")
+    language: str = Field(..., description="Language code used")
+
+
 class Context(BaseModel):
     audience: Optional[str] = None
     goal: Optional[str] = None

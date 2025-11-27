@@ -3,8 +3,9 @@ Core coaching logic for SpeakWise Real.
 Implements the AI-powered pitch analysis and feedback generation.
 """
 import os
+import json
 from typing import Optional
-from openai import OpenAI
+import google.generativeai as genai
 from .models import PitchAnalysisRequest, PitchAnalysisResponse, Scores, Score
 
 
@@ -12,12 +13,13 @@ class SpeakWiseCoach:
     """Main coaching class that analyzes pitches and provides structured feedback."""
     
     def __init__(self):
-        api_key = os.getenv("OPENAI_API_KEY")
+        api_key = os.getenv("GOOGLE_API_KEY")
         if not api_key:
-            raise ValueError("OPENAI_API_KEY environment variable is not set")
+            raise ValueError("GOOGLE_API_KEY environment variable is not set")
         
-        self.client = OpenAI(api_key=api_key)
-        self.model = os.getenv("OPENAI_MODEL", "gpt-4-turbo-preview")
+        genai.configure(api_key=api_key)
+        model_name = os.getenv("GOOGLE_MODEL", "gemini-pro")
+        self.model = genai.GenerativeModel(model_name)
     
     def analyze_pitch(self, request: PitchAnalysisRequest) -> PitchAnalysisResponse:
         """
@@ -30,31 +32,35 @@ class SpeakWiseCoach:
             PitchAnalysisResponse with all feedback sections
         """
         # Build the prompt for the AI
-        prompt = self._build_analysis_prompt(request)
+        full_prompt = self._build_full_prompt(request)
         
-        # Call OpenAI API
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=[
-                {
-                    "role": "system",
-                    "content": self._get_system_prompt()
-                },
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ],
-            temperature=0.7,
-            response_format={"type": "json_object"}
+        # Call Google Gemini API
+        generation_config = {
+            "temperature": 0.7,
+            "response_mime_type": "application/json",
+        }
+        
+        response = self.model.generate_content(
+            full_prompt,
+            generation_config=generation_config
         )
         
         # Parse the response
-        import json
-        result = json.loads(response.choices[0].message.content)
+        result = json.loads(response.text)
         
         # Convert to PitchAnalysisResponse
         return self._parse_response(result, request)
+    
+    def _build_full_prompt(self, request: PitchAnalysisRequest) -> str:
+        """Builds the complete prompt including system instructions and user input."""
+        system_prompt = self._get_system_prompt()
+        user_prompt = self._build_analysis_prompt(request)
+        
+        return f"""{system_prompt}
+
+{user_prompt}
+
+Remember: You must respond with valid JSON only, following the exact structure specified above."""
     
     def _get_system_prompt(self) -> str:
         """Returns the system prompt that defines the coach's role and behavior."""
