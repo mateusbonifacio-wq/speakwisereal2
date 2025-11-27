@@ -34,9 +34,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize services
-coach = SpeakWiseCoach()
-transcription_service = TranscriptionService()
+# Initialize services (lazy initialization to avoid errors on import)
+coach = None
+transcription_service = None
+
+def get_coach():
+    global coach
+    if coach is None:
+        coach = SpeakWiseCoach()
+    return coach
+
+def get_transcription_service():
+    global transcription_service
+    if transcription_service is None:
+        transcription_service = TranscriptionService()
+    return transcription_service
 
 
 @app.get("/")
@@ -64,7 +76,8 @@ async def analyze_pitch(request: PitchAnalysisRequest):
     then returns detailed feedback following the SpeakWise Real format.
     """
     try:
-        response = coach.analyze_pitch(request)
+        coach_instance = get_coach()
+        response = coach_instance.analyze_pitch(request)
         return response
     except Exception as e:
         raise HTTPException(
@@ -101,7 +114,8 @@ async def transcribe_audio(
             )
         
         # Transcribe
-        transcript = transcription_service.transcribe_audio(
+        transcribe_service = get_transcription_service()
+        transcript = transcribe_service.transcribe_audio(
             audio_file=audio_bytes,
             model_id=model_id,
             language_code=language_code if language_code else None,
